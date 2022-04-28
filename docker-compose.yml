@@ -10,15 +10,13 @@ services:
       - app_bootstrap_cache:/var/www/app/bootstrap/cache
       - .:/var/www/app
 
-  caddy:
-    image: caddy:2.5.0-alpine
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
     volumes:
-      - .:/var/www/app:ro
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - app_node_modules:/usr/src/app/node_modules
+      - .:/usr/src/app
 
   mariadb:
     image: mariadb:10.7.3-focal
@@ -33,8 +31,19 @@ services:
   adminer:
     image: adminer:4.8.1-standalone
 
+  caddy:
+    image: caddy:2.5.0-alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .:/var/www/app:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
 volumes:
   mariadb:
+  app_node_modules:
   app_vendor:
   app_storage:
   app_bootstrap_cache:
