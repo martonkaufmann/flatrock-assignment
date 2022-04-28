@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - app_vendor:/var/www/app/vendor
+      - app_storage:/var/www/app/storage
+      - app_bootstrap_cache:/var/www/app/bootstrap/cache
+      - .:/var/www/app
+
+  caddy:
+    image: caddy:2.5.0-alpine
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .:/var/www/app:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+  mariadb:
+    image: mariadb:10.7.3-focal
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: assignment
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  adminer:
+    image: adminer:4.8.1-standalone
+
+volumes:
+  mariadb:
+  app_vendor:
+  app_storage:
+  app_bootstrap_cache:
